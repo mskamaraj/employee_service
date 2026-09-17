@@ -4,8 +4,8 @@ import sqlite3
 import employee
 
 class EmployeeDAO:
-    def __init__(self):
-        self.connection = sqlite3.connect("employee.db", check_same_thread=False)
+    def __init__(self, database:str="employee.db"):
+        self.connection = sqlite3.connect(database, check_same_thread=False)
         self.create_table()
 
     def create_table(self):
@@ -13,7 +13,7 @@ class EmployeeDAO:
         CREATE TABLE IF NOT EXISTS employees (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        role TEST NOT NULL)
+        role TEXT NOT NULL)
         """
         self.connection.execute(query)
         self.connection.commit()
@@ -71,5 +71,8 @@ class EmployeeDAO:
         self.connection.commit()
         if cursor.rowcount == 0:
             raise ValueError(f"Employee {id} does not exist")
+
+    def close(self):
+        self.connection.close()
 
         

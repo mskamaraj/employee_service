@@ -1,9 +1,8 @@
 from employee_dao import EmployeeDAO
-from employee import Employee
 
 class EmployeeService:
-    def __init__(self):
-        self.employee_dao = EmployeeDAO()
+    def __init__(self, employee_dao:EmployeeDAO=None):
+        self.employee_dao = employee_dao or EmployeeDAO()
 
     def create_employee(self, name:str, role:str):
         return self.employee_dao.add_employee(name, role)
