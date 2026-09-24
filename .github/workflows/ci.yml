@@ -34,3 +34,6 @@ jobs:
 
       - name: Run integration tests
         run: pytest tests/integration -v
+
+      - name: Build Docker image
+        run: docker build -t employee-service .
