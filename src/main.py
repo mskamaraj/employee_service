@@ -8,7 +8,7 @@ def get_employee_service():
 
 @app.get("/")
 def home():
-    return {"message": "Welcome to the Employee Service API"}
+    return {"message": "Welcome to the Employee Service API, please use the /employees endpoint to manage employees."}
 
 @app.get("/employees")
 def get_all_employee():
