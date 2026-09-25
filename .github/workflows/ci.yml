@@ -65,3 +65,11 @@ jobs:
         run: |
           docker push \
           544893998643.dkr.ecr.ap-south-1.amazonaws.com/employee-service:latest
+
+      - name: Deploy to ECS
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          aws ecs update-service \
+            --cluster employee-service-cluster \
+            --service employee-service \
+            --force-new-deployment
