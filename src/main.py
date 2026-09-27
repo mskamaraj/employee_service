@@ -10,6 +10,10 @@ def get_employee_service():
 def home():
     return {"message": "Welcome to the Employee Service API, please use the /employees endpoint to manage employees."}
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+
 @app.get("/employees")
 def get_all_employee():
     return get_employee_service().get_all_employee()
