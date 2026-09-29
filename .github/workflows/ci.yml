@@ -80,9 +80,17 @@ jobs:
 
           NEW_TASK_DEFINITION=$(echo "$TASK_DEFINITION" | \
             jq --arg IMAGE_URI "$IMAGE_URI" \
-            '.containerDefinitions[0].image = $IMAGE_URI' |
-            del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy))
-
+            'del(
+               .taskDefinitionArn,
+               .revision,
+               .status,
+               .requiresAttributes,
+               .compatibilities,
+               .registeredAt,
+               .registeredBy
+              ) |
+              .containerDefinitions[0].image = $IMAGE_URI')
+              
           echo "$NEW_TASK_DEFINITION" > task-definition.json
 
           NEW_TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
@@ -90,6 +98,7 @@ jobs:
             --query 'taskDefinition.taskDefinitionArn' \
             --output text)
         
+
           echo "New task definition: $NEW_TASK_DEFINITION_ARN"
 
           aws ecs update-service \
