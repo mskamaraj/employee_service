@@ -69,12 +69,32 @@ jobs:
       - name: Deploy to ECS
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
+          IMAGE_URI=544893998643.dkr.ecr.ap-south-1.amazonaws.com/employee-service:${{github.sha}}
+
+          echo "Deploying image: $IMAGE_URI"
+
           TASK_DEFINITION=$(aws ecs describe-task-definition \
             --task-definition employee-service \
+            --query 'taskDefinition' \
+            --output json)
+
+          NEW_TASK_DEFINITION=$(echo "$TASK_DEFINITION" | \
+            jq --arg IMAGE_URI "$IMAGE_URI" \
+            '.containerDefinitions[0].image = $IMAGE_URI' |
+            del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy))
+
+          echo "$NEW_TASK_DEFINITION" > task-definition.json
+
+          NEW_TASK_DEFINITION_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://task-definition.json \
             --query 'taskDefinition.taskDefinitionArn' \
             --output text)
+        
+          echo "New task definition: $NEW_TASK_DEFINITION_ARN"
 
           aws ecs update-service \
             --cluster employee-service-cluster \
             --service employee-service \
-            --task-definition "$TASK_DEFINITION"
+            --task-definition "$NEW_TASK_DEFINITION_ARN"
+
+          echo "Deployment started successfully"
