@@ -69,7 +69,12 @@ jobs:
       - name: Deploy to ECS
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
+          TASK_DEFINITION=$(aws ecs describe-task-definition \
+            --task-definition employee-service \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
           aws ecs update-service \
             --cluster employee-service-cluster \
             --service employee-service \
-            --force-new-deployment
+            --task-definition "$TASK_DEFINITION"
